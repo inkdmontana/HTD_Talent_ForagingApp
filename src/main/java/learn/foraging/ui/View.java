@@ -4,6 +4,7 @@ import learn.foraging.models.Category;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class View {
 
     private final ConsoleIO io;
@@ -175,11 +177,12 @@ public class View {
             return;
         }
         for (Forage forage : forages) {
-            io.printf("%s %s - %s:%s - Value: $%.2f%n",
+            io.printf("%s %s - %s:%s - Collected: %s kg - Value: $%.2f%n",
                     forage.getForager().getFirstName(),
                     forage.getForager().getLastName(),
                     forage.getItem().getName(),
                     forage.getItem().getCategory(),
+                    forage.getKilograms(),
                     forage.getValue()
             );
         }

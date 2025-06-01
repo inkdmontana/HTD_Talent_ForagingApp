@@ -3,6 +3,8 @@ package learn.foraging.data;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -10,12 +12,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ForageFileRepository implements ForageRepository {
 
     private static final String HEADER = "id,forager_id,item_id,kg";
     private final String directory;
 
-    public ForageFileRepository(String directory) {
+
+    public ForageFileRepository(@Value("./data/forage_data") String directory) {
         this.directory = directory;
     }
 

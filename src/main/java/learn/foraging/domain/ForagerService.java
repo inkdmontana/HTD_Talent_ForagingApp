@@ -5,6 +5,7 @@ import learn.foraging.data.ForagerRepository;
 import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class ForagerService {
 
     private final ForagerRepository repository;
@@ -26,8 +28,9 @@ public class ForagerService {
     }
 
     public List<Forager> findByLastName(String prefix) {
+        String lowerPrefix = prefix.toLowerCase();
         return repository.findAll().stream()
-                .filter(i -> i.getLastName().toLowerCase().startsWith(prefix))
+                .filter(f -> f.getLastName() != null && f.getLastName().toLowerCase().startsWith(lowerPrefix))
                 .collect(Collectors.toList());
     }
 
