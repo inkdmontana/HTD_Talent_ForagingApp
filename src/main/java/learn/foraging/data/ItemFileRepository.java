@@ -54,6 +54,12 @@ public class ItemFileRepository implements ItemRepository {
         if (item == null) {
             return null;
         }
+        if (item.getName() == null || item.getName().isBlank()) {
+            throw new DataException("Item name is required.");
+        }
+        if (item.getName().contains(",")) {
+            throw new DataException("Item name cannot contain commas.");
+        }
 
         List<Item> all = findAll();
         boolean isDuplicate = all.stream().anyMatch(i -> i.getName().equalsIgnoreCase(item.getName()));

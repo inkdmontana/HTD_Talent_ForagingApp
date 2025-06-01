@@ -73,7 +73,7 @@ public class ConsoleIO {
     public int readInt(String prompt) {
         while (true) {
             try {
-                return Integer.parseInt(readRequiredString(prompt));
+                return Integer.parseInt(readRequiredString(prompt).trim());
             } catch (NumberFormatException ex) {
                 println(INVALID_NUMBER);
             }

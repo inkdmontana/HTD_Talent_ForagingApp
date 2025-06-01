@@ -116,7 +116,11 @@ public class Controller {
     }
 
     private void addItem() throws DataException {
+        try {
         Item item = view.makeItem();
+        if (item == null) {
+            return;
+        }
         Result<Item> result = itemService.add(item);
         if (!result.isSuccess()) {
             view.displayStatus(false, result.getErrorMessages());
@@ -124,6 +128,8 @@ public class Controller {
             String successMessage = String.format("Item %s created.", result.getPayload().getId());
             view.displayStatus(true, successMessage);
         }
+    } catch (DataException ex) {
+        view.displayException(ex);}
     }
 
     private void generate() throws DataException {
