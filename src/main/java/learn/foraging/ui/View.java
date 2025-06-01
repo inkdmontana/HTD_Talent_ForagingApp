@@ -7,7 +7,9 @@ import learn.foraging.models.Item;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class View {
@@ -193,4 +195,55 @@ public class View {
             io.printf("%s: %s, %s, %.2f $/kg%n", item.getId(), item.getName(), item.getCategory(), item.getDollarPerKilogram());
         }
     }
+
+    public Forager makeForager() {
+        Forager forager = new Forager();
+        forager.setFirstName(io.readRequiredString("Forager first name: "));
+        forager.setLastName(io.readRequiredString("Forager last name: "));
+        String state = io.readRequiredString("Forager state: ");
+        forager.setState(state.toUpperCase());
+        return forager;
+    }
+
+    public void displayForagers(List<Forager> foragers) {
+        if (foragers == null || foragers.isEmpty()) {
+            io.println("No foragers found for this state.");
+            return;
+        }
+        for (Forager forager : foragers) {
+            io.printf("ID: %s - %s %s from %s%n",
+                    forager.getId(),
+                    forager.getFirstName(),
+                    forager.getLastName(),
+                    forager.getState());
+        }
+    }
+
+    public String readStateAbbreviation() {
+        String state;
+        do {
+            state = io.readRequiredString("Enter 2-letter state abbreviation: ");
+            if (state.length() != 2) {
+                displayStatus(false, "State abbreviation must be 2 characters.");
+            }
+        } while (state.length() != 2);
+        return state.toUpperCase();
+    }
+
+    public void displayKilogramsPerItem(Map<Item, BigDecimal> report) {
+        report.entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(Item::getName))).forEach(e -> {
+            String name = e.getKey().getName();
+            BigDecimal kilograms = e.getValue();
+            io.printf("%s: %.2f kg%n", name, kilograms);
+        });
+    }
+
+    public void displayCategoryValues(Map<Category, BigDecimal> report) {
+        for (Category category : Category.values()) {
+            BigDecimal value = report.getOrDefault(category, BigDecimal.ZERO);
+            io.printf("%s: $8%.2f%n", category, value);
+        }
+    }
+
+
 }

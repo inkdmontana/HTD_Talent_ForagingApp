@@ -59,4 +59,47 @@ class ItemServiceTest {
         assertEquals(2, result.getPayload().getId());
     }
 
+    @Test
+    void shouldNotSaveDuplicateName() throws DataException {
+        Item item = new Item(0, "Chanterelle", Category.MEDICINAL, new BigDecimal("10.00"));
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+    }
+
+    @Test
+    void shouldSaveInedibleWithZeroPrice() throws DataException {
+        Item item = new Item(0, "Rock", Category.INEDIBLE, BigDecimal.ZERO);
+        Result<Item> result = service.add(item);
+        assertTrue(result.isSuccess());
+        assertEquals(2, result.getPayload().getId());
+    }
+
+    @Test
+    void shouldSavePoisonousWithZeroPrice() throws DataException {
+        Item item = new Item(0, "Toxic Mushroom", Category.POISONOUS, BigDecimal.ZERO);
+        Result<Item> result = service.add(item);
+        assertTrue(result.isSuccess());
+        assertEquals(2, result.getPayload().getId());
+    }
+
+    @Test
+    void shouldNotSavePoisonousItemWithNonZeroPrice() throws DataException {
+        Item item = new Item(0, "Nightshade", Category.POISONOUS, new BigDecimal("0.01"));
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+        assertTrue(result.getErrorMessages().get(0).contains("must be 0"));
+    }
+
+    @Test
+    void shouldNotSaveInedibleItemWithNonZeroPrice() throws DataException {
+        Item item = new Item(0, "Rock", Category.INEDIBLE, new BigDecimal("1.00"));
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+        assertTrue(result.getErrorMessages().get(0).contains("must be 0"));
+    }
+
+
+
+
+
 }

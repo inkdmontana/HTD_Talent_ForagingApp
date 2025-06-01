@@ -45,7 +45,7 @@ public class ItemFileRepository implements ItemRepository {
                 .findFirst()
                 .orElse(null);
     }
-
+    @Override
     public Item add(Item item) throws DataException {
 
         if (item == null) {
@@ -53,6 +53,11 @@ public class ItemFileRepository implements ItemRepository {
         }
 
         List<Item> all = findAll();
+        boolean isDuplicate = all.stream().anyMatch(i -> i.getName().equalsIgnoreCase(item.getName()));
+
+        if (isDuplicate) {
+            throw new DataException(String.format("Item '%s' is a duplicate.", item.getName())) ;
+        }
 
         int nextId = all.stream()
                 .mapToInt(Item::getId)

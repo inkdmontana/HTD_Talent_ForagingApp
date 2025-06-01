@@ -44,5 +44,10 @@ public class ForagerRepositoryDouble implements ForagerRepository {
         forager.setState("GA");
         return forager;
     }
+    @Override
+    public Forager add(Forager forager) throws DataException {
+        foragers.add(forager);
+        return forager;
+    }
 
 }

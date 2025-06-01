@@ -41,8 +41,9 @@ public class ForageFileRepository implements ForageRepository {
 
     @Override
     public Forage add(Forage forage) throws DataException {
-        List<Forage> all = findByDate(forage.getDate());
+
         forage.setId(java.util.UUID.randomUUID().toString());
+        List<Forage> all = findByDate(forage.getDate());
         all.add(forage);
         writeAll(all, forage.getDate());
         return forage;

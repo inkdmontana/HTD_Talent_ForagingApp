@@ -2,10 +2,7 @@ package learn.foraging.data;
 
 import learn.foraging.models.Forager;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOError;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,5 +57,28 @@ public class ForagerFileRepository implements ForagerRepository {
         result.setLastName(fields[2]);
         result.setState(fields[3]);
         return result;
+    }
+
+    @Override
+    public Forager add(Forager forager) throws DataException {
+        List<Forager> all = findAll();
+        all.add(forager);
+        writeAll(all);
+        return forager;
+    }
+
+    private void writeAll(List<Forager> foragers) throws DataException {
+        try (PrintWriter writer = new PrintWriter(filePath)) {
+            writer.println("id,first_name,last_name,state");
+            for (Forager forager : foragers) {
+                writer.println(String.format("%s,%s,%s,%s",
+                        forager.getId(),
+                        forager.getFirstName(),
+                        forager.getLastName(),
+                        forager.getState()));
+            }
+        }catch (IOException ex) {
+            throw new DataException("Could not write to file", ex);
+        }
     }
 }

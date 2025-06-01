@@ -10,8 +10,11 @@ import learn.foraging.models.Forage;
 import learn.foraging.models.Forager;
 import learn.foraging.models.Item;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Controller {
 
@@ -45,6 +48,9 @@ public class Controller {
                 case VIEW_FORAGES_BY_DATE:
                     viewByDate();
                     break;
+                case VIEW_FORAGERS_BY_STATE:
+                    viewForagersByState();
+                    break;
                 case VIEW_ITEMS:
                     viewItems();
                     break;
@@ -52,19 +58,16 @@ public class Controller {
                     addForage();
                     break;
                 case ADD_FORAGER:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    addForager();
                     break;
                 case ADD_ITEM:
                     addItem();
                     break;
                 case REPORT_KG_PER_ITEM:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    reportKgPerItem();
                     break;
                 case REPORT_CATEGORY_VALUE:
-                    view.displayStatus(false, "NOT IMPLEMENTED");
-                    view.enterToContinue();
+                    reportCategoryValue();
                     break;
                 case GENERATE:
                     generate();
@@ -141,4 +144,38 @@ public class Controller {
         List<Item> items = itemService.findByCategory(category);
         return view.chooseItem(items);
     }
+
+    private void addForager() throws DataException {
+        Forager forager = view.makeForager();
+        Result<Forager> result = foragerService.add(forager);
+        if (!result.isSuccess()) {
+            view.displayStatus(false, result.getErrorMessages());
+        } else {
+            view.displayStatus(true, String.format("Forager %s %s from %s created.", result.getPayload().getFirstName(),
+                    result.getPayload().getLastName(), result.getPayload().getState()));
+        }
+    }
+
+    private void viewForagersByState() {
+        String state = view.readStateAbbreviation();
+        List<Forager> foragers = foragerService.findByState(state);
+        view.displayForagers(foragers);
+        view.enterToContinue();
+    }
+
+    private void reportKgPerItem() {
+        LocalDate date = view.getForageDate();
+        Map<Item, BigDecimal> report = forageService.kilogramsPerItem(date);
+        view.displayKilogramsPerItem(report);
+        view.enterToContinue();
+    }
+
+    private void reportCategoryValue() {
+        LocalDate date = view.getForageDate();
+        Map<Category, BigDecimal> report = forageService.totalValuePerCategory(date);
+        view.displayCategoryValues(report);
+        view.enterToContinue();
+    }
+
+
 }
