@@ -57,9 +57,6 @@ public class ItemFileRepository implements ItemRepository {
         if (item.getName() == null || item.getName().isBlank()) {
             throw new DataException("Item name is required.");
         }
-        if (item.getName().contains(",")) {
-            throw new DataException("Item name cannot contain commas.");
-        }
 
         List<Item> all = findAll();
         boolean isDuplicate = all.stream().anyMatch(i -> i.getName().equalsIgnoreCase(item.getName()));
@@ -100,9 +97,10 @@ public class ItemFileRepository implements ItemRepository {
     }
 
     private String serialize(Item item) {
+        String nameWithoutCommas = item.getName().replaceAll(",", "@@@");
         return String.format("%s,%s,%s,%s",
                 item.getId(),
-                item.getName(),
+                nameWithoutCommas,
                 item.getCategory(),
                 item.getDollarPerKilogram());
     }
@@ -110,7 +108,9 @@ public class ItemFileRepository implements ItemRepository {
     private Item deserialize(String[] fields) {
         Item result = new Item();
         result.setId(Integer.parseInt(fields[0]));
-        result.setName(fields[1]);
+
+        String nameWithCommas = fields[1].replace("@@@", ",");
+        result.setName(nameWithCommas);
         result.setCategory(Category.valueOf(fields[2]));
         result.setDollarPerKilogram(new BigDecimal(fields[3]));
         return result;
@@ -133,4 +133,5 @@ public class ItemFileRepository implements ItemRepository {
             throw new DataException(ex);
         }
     }
+
 }

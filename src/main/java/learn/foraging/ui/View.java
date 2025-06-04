@@ -119,7 +119,7 @@ public class View {
         Item item = new Item();
         item.setCategory(getItemCategory());
         item.setName(io.readRequiredString("Item Name: "));
-        item.setDollarPerKilogram(io.readBigDecimal("$/Kg: ", BigDecimal.ZERO, new BigDecimal("7500.00")));
+        item.setDollarPerKilogram(io.readBigDecimal("$/Kg: "));
         return item;
     }
 
@@ -244,7 +244,7 @@ public class View {
     public void displayCategoryValues(Map<Category, BigDecimal> report) {
         for (Category category : Category.values()) {
             BigDecimal value = report.getOrDefault(category, BigDecimal.ZERO);
-            io.printf("%s: $8%.2f%n", category, value);
+            io.printf("%s: $%.2f%n", category, value);
         }
     }
 

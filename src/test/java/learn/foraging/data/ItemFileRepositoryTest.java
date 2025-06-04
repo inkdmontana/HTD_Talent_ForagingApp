@@ -1,5 +1,7 @@
 package learn.foraging.data;
 
+import learn.foraging.domain.ItemService;
+import learn.foraging.domain.Result;
 import learn.foraging.models.Category;
 import learn.foraging.models.Item;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,6 +81,5 @@ class ItemFileRepositoryTest {
         assertEquals(1, item.getId());
         assertEquals(1, repository.findAll().size());
     }
-
 
 }

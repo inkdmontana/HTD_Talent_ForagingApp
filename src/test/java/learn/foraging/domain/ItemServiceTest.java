@@ -98,6 +98,32 @@ class ItemServiceTest {
         assertTrue(result.getErrorMessages().get(0).contains("must be 0"));
     }
 
+    @Test
+    void shouldNotAddEdibleItemWithZeroDollarsPerKilogram() throws DataException {
+        Item item = new Item();
+        item.setName("TestBerry");
+        item.setCategory(Category.EDIBLE);
+        item.setDollarPerKilogram(BigDecimal.ZERO);
+
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+        assertTrue(result.getErrorMessages().contains("Edible/Medicinal Items must have $/kg value between $0.01 and $7500."));
+
+    }
+
+    @Test
+    void shouldNotAddMedicinalItemWithTenThousandDollarsPerKilogram() throws DataException {
+        Item item = new Item();
+        item.setName("TestBerry");
+        item.setCategory(Category.MEDICINAL);
+        item.setDollarPerKilogram(new BigDecimal("10000.00"));
+
+        Result<Item> result = service.add(item);
+        assertFalse(result.isSuccess());
+        assertTrue(result.getErrorMessages().contains("Edible/Medicinal Items must have $/kg value between $0.01 and $7500."));
+
+
+    }
 
 
 

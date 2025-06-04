@@ -40,27 +40,33 @@ public class ItemService {
             result.addErrorMessage(String.format("Item '%s' is a duplicate.", item.getName()));
         }
 
+
         if (item.getDollarPerKilogram() == null) {
             result.addErrorMessage("$/Kg is required.");
-        } else if (item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) < 0
-                || item.getDollarPerKilogram().compareTo(new BigDecimal("7500.00")) > 0) {
-            result.addErrorMessage("%/Kg must be between 0.00 and 7500.00.");
+            return result;
         }
 
-        //price for inedible and poisonous must be 0
-
+        if (item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) < 0) {
+            result.addErrorMessage("$/Kg must not be negative.");
+        }
+        //edible and medicinal must be between 0.01 and 7500
+        if ((item.getCategory() == Category.EDIBLE || item.getCategory() == Category.MEDICINAL)
+                && (item.getDollarPerKilogram().compareTo(new BigDecimal("0.01")) < 0
+                || item.getDollarPerKilogram().compareTo(new BigDecimal("7500.00")) > 0)) {
+            result.addErrorMessage("Edible/Medicinal Items must have $/kg value between $0.01 and $7500.");
+        }
+        //inedible and poisonous must be 0
         if ((item.getCategory() == Category.INEDIBLE || item.getCategory() == Category.POISONOUS)
                 && item.getDollarPerKilogram().compareTo(BigDecimal.ZERO) > 0) {
-            result.addErrorMessage("Dollars/Kg must be 0.00 for Inedible and Poisonous items.");
+            result.addErrorMessage("$/Kg must be 0.00 for Inedible and Poisonous items.");
         }
-
 
         if (!result.isSuccess()) {
             return result;
         }
 
         result.setPayload(repository.add(item));
-
         return result;
     }
+
 }

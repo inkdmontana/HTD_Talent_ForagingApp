@@ -37,8 +37,11 @@ public class ForageService {
 
         List<Forage> result = forageRepository.findByDate(date);
         for (Forage forage : result) {
-            forage.setForager(foragerMap.get(forage.getForager().getId()));
-            forage.setItem(itemMap.get(forage.getItem().getId()));
+            Forager forager = foragerMap.get(forage.getForager().getId());
+            Item item = itemMap.get(forage.getItem().getId());
+
+            forage.setForager(forager);
+            forage.setItem(item);
         }
 
         return result;
@@ -153,26 +156,32 @@ public class ForageService {
         }
     }
     public Map<Item, BigDecimal> kilogramsPerItem(LocalDate date) {
-        List<Forage> forages = findByDate(date);
-
-        Map<Item, BigDecimal> result = new HashMap<>();
-        for (Forage f : forages) {
-            result.put(f.getItem(), result.getOrDefault(f.getItem(),BigDecimal.ZERO)
-                    .add(BigDecimal.valueOf(f.getKilograms())));
-        }
-        return result;
+        return findByDate(date).stream().collect(Collectors.groupingBy(Forage::getItem,
+                Collectors.reducing(BigDecimal.ZERO, f -> BigDecimal.valueOf(f.getKilograms()), BigDecimal::add)));
     }
 
     public Map<Category, BigDecimal> totalValuePerCategory(LocalDate date) {
         List<Forage> forages = findByDate(date);
 
+
         Map<Category, BigDecimal> result = new HashMap<>();
+        for (Category c : Category.values()) {
+            result.put(c, BigDecimal.ZERO);
+        }
+
         for (Forage f : forages) {
             Category category = f.getItem().getCategory();
-            BigDecimal value = BigDecimal.valueOf(f.getKilograms()).multiply(f.getItem().getDollarPerKilogram());
+            BigDecimal value;
 
-            result.put(category, result.getOrDefault(category, BigDecimal.ZERO).add(value));
+            if (category == Category.INEDIBLE || category == Category.POISONOUS) {
+                value = BigDecimal.ZERO;
+            } else {
+                value = BigDecimal.valueOf(f.getKilograms()).multiply(f.getItem().getDollarPerKilogram());
+            }
+
+            result.put(category, result.get(category).add(value));
         }
+
         return result;
     }
 

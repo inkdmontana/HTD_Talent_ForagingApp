@@ -54,10 +54,11 @@ public class ForagerFileRepository implements ForagerRepository {
     }
     
     private Forager deserialize(String[] fields) {
+
         Forager result = new Forager();
         result.setId(fields[0]);
-        result.setFirstName(fields[1]);
-        result.setLastName(fields[2]);
+        result.setLastName(fields[1]);
+        result.setFirstName(fields[2]);
         result.setState(fields[3]);
         return result;
     }
@@ -72,12 +73,12 @@ public class ForagerFileRepository implements ForagerRepository {
 
     private void writeAll(List<Forager> foragers) throws DataException {
         try (PrintWriter writer = new PrintWriter(filePath)) {
-            writer.println("id,first_name,last_name,state");
+            writer.println("id,last_name,first_name,state");
             for (Forager forager : foragers) {
                 writer.println(String.format("%s,%s,%s,%s",
                         forager.getId(),
-                        forager.getFirstName(),
                         forager.getLastName(),
+                        forager.getFirstName(),
                         forager.getState()));
             }
         }catch (IOException ex) {
