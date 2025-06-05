@@ -57,8 +57,11 @@ public class ForagerFileRepository implements ForagerRepository {
 
         Forager result = new Forager();
         result.setId(fields[0]);
-        result.setLastName(fields[1]);
-        result.setFirstName(fields[2]);
+
+        String lastName = fields[1].replace("@@@", ",");
+        String firstName = fields[2].replace("@@@", ",");
+        result.setLastName(lastName);
+        result.setFirstName(firstName);
         result.setState(fields[3]);
         return result;
     }
@@ -75,10 +78,14 @@ public class ForagerFileRepository implements ForagerRepository {
         try (PrintWriter writer = new PrintWriter(filePath)) {
             writer.println("id,last_name,first_name,state");
             for (Forager forager : foragers) {
+
+                String lastName = forager.getLastName().replace(",", "@@@");
+                String firstName = forager.getFirstName().replace(",", "@@@");
+
                 writer.println(String.format("%s,%s,%s,%s",
                         forager.getId(),
-                        forager.getLastName(),
-                        forager.getFirstName(),
+                        lastName,
+                        firstName,
                         forager.getState()));
             }
         }catch (IOException ex) {
